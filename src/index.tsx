@@ -154,8 +154,8 @@ export const NotificationProvider = ({ children, config: initialConfig = {} }: N
 
     // Subscribe to notifications.
     useEffect(() => {
-        notificationListener.current = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            await config.handleNotification?.(response);
+        notificationListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+            config.handleNotification?.(response);
         });
 
         return () => {
