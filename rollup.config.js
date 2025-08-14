@@ -4,7 +4,9 @@ import dts from 'rollup-plugin-dts';
 const external = [
     'react',
     'react-native',
-    'expo-location'
+    'expo-notifications',
+    'expo-device',
+    'expo-constants'
 ];
 
 export default [
