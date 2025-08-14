@@ -9,7 +9,6 @@ import {
     useState
 } from 'react';
 
-import { PermissionResponse } from 'expo-notifications';
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
@@ -42,7 +41,7 @@ const DEFAULT_CONFIG: NotificationConfig = {
 
 
 export interface NotificationContextType {
-    permission: PermissionResponse | null;
+    permission: Notifications.PermissionResponse | null;
     loading: boolean;
     updateConfig: (newConfig: Partial<NotificationConfig>) => void;
     registerForNotifications: () => Promise<string | null>;
@@ -69,7 +68,7 @@ export const NotificationProvider = ({ children, config: initialConfig = {} }: N
         ...DEFAULT_CONFIG,
         ...initialConfig
     });
-    const [permission, setPermission] = useState<PermissionResponse | null>(null);
+    const [permission, setPermission] = useState<Notifications.PermissionResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
     const notificationListener = useRef<Notifications.EventSubscription>(undefined);
