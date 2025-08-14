@@ -26,14 +26,12 @@ import {
 
 export interface NotificationConfig {
     tokenRefreshInterval: number;
-    automaticBadgeCountIncrement: boolean;
     handleNotification?: (notification: Notifications.NotificationResponse) => void | Promise<void>;
     handleNewToken?: (token: string) => void | Promise<void>;
 };
 
 const DEFAULT_CONFIG: NotificationConfig = {
     tokenRefreshInterval: 7 * 24 * 60 * 60 * 1000, // 7 days in ms.
-    automaticBadgeCountIncrement: true,
     handleNotification: undefined,
     handleNewToken: undefined
 };
@@ -157,7 +155,6 @@ export const NotificationProvider = ({ children, config: initialConfig = {} }: N
     // Subscribe to notifications.
     useEffect(() => {
         notificationListener.current = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            if (config.automaticBadgeCountIncrement) await incrementBadgeCount();
             await config.handleNotification?.(response);
         });
 

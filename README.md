@@ -98,7 +98,6 @@ function App() {
     <NotificationProvider
       config={{
         tokenRefreshInterval: 24 * 60 * 60 * 1000, // 24 hours
-        automaticBadgeCountIncrement: false,
         handleNotification: async (response) => {
           console.log('Notification received:', response);
           // Handle notification tap
@@ -122,7 +121,6 @@ function App() {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `config.tokenRefreshInterval` | `number` | `604800000` | Token refresh interval in ms (7 days) |
-| `config.automaticBadgeCountIncrement` | `boolean` | `true` | Auto-increment badge on notification |
 | `config.handleNotification` | `function` | `undefined` | Custom notification response handler |
 | `config.handleNewToken` | `function` | `undefined` | Custom new token handler |
 
@@ -162,7 +160,6 @@ await clearBadgeCount();
 ```tsx
 interface NotificationConfig {
   tokenRefreshInterval: number;                    // Token refresh interval in ms
-  automaticBadgeCountIncrement: boolean;          // Auto-increment on notification
   handleNotification?: (response: NotificationResponse) => void | Promise<void>;
   handleNewToken?: (token: string) => void | Promise<void>;
 }
