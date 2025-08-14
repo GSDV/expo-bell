@@ -1,5 +1,9 @@
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
+
+
 
 const external = [
     'react',
@@ -8,6 +12,16 @@ const external = [
     'expo-device',
     'expo-constants'
 ];
+
+
+
+const aliasConfig = {
+    entries: [
+        { find: '@', replacement: path.resolve(__dirname, 'src') },
+    ]
+};
+
+
 
 export default [
     {
@@ -27,11 +41,12 @@ export default [
         ],
         external,
         plugins: [
-        typescript({
-            tsconfig: './tsconfig.json',
-            declaration: false,
-            declarationMap: false
-        })
+            alias(aliasConfig),
+            typescript({
+                tsconfig: './tsconfig.json',
+                declaration: false,
+                declarationMap: false
+            })
         ]
     },
     {
@@ -41,6 +56,9 @@ export default [
             format: 'esm'
         },
         external,
-        plugins: [dts()]
+        plugins: [
+            alias(aliasConfig),
+            dts()
+        ]
     }
 ];
