@@ -1,0 +1,53 @@
+{
+  "name": "expo-bell",
+  "version": "1.0.0",
+  "description": "Simplify notifications!",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "rm -rf lib",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "notifications",
+    "provider",
+    "permission"
+  ],
+  "author": "Gabriele Scotto di Vettimo <sdvgab@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GSDV/expo-bell.git"
+  },
+  "homepage": "https://github.com/GSDV/expo-bell#README",
+  "bugs": "https://github.com/GSDV/expo-bell/issues",
+  "type": "commonjs",
+  "peerDependencies": {
+    "expo-notifications": ">=0.31.4",
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "@types/react": "^19.0.0",
+    "@types/react-native": "^0.73.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "eslint": "^9.33.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "expo-device": "^7.1.4",
+    "expo-secure-store": "^14.2.3"
+  }
+}
