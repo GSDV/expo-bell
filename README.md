@@ -1,6 +1,6 @@
 # Expo Bell 🔔
 
-**The easiest way to handle notifications in Expo/React Native apps.**
+**The easiest way to handle notifications in React Native Expo apps.**
 
 Bell provides a simple, powerful React context for handling notification permissions, push tokens, badge counts, and notification responses with zero configuration. Managing Expo notifications can be complex and error-prone. Bell handles token refresh, permissions, and badge management for you - with type safety!
 
