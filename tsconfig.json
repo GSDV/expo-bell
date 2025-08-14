@@ -16,7 +16,10 @@
         "declarationMap": true,
         "outDir": "lib",
         "rootDir": "src",
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "paths": {
+            "@/*": ["./*"]
+        }
     },
     "include": [
         "src/**/*"
