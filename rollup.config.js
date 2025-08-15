@@ -1,8 +1,13 @@
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import alias from '@rollup/plugin-alias';
-import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 
 const external = [
@@ -17,7 +22,7 @@ const external = [
 
 const aliasConfig = {
     entries: [
-        { find: '@', replacement: path.resolve(__dirname, 'src') },
+        { find: '@', replacement: resolve(__dirname, 'src') },
     ]
 };
 
@@ -25,7 +30,7 @@ const aliasConfig = {
 
 export default [
     {
-        input: 'src/index.tsx',
+        input: 'src/index.ts',
         output: [
         {
             file: 'lib/index.js',
@@ -50,7 +55,7 @@ export default [
         ]
     },
     {
-        input: 'src/index.tsx',
+        input: 'src/index.ts',
         output: {
             file: 'lib/index.d.ts',
             format: 'esm'
