@@ -1,6 +1,6 @@
 {
   "name": "expo-bell",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Simplify notifications!",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
