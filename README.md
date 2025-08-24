@@ -2,178 +2,255 @@
 
 **The easiest way to handle notifications in React Native Expo apps.**
 
-Bell provides a simple, powerful React context for handling notification permissions, push tokens, badge counts, and notification responses with zero configuration. Managing Expo notifications can be complex and error-prone. Bell handles token refresh, permissions, and badge management for you - with type safety!
+Bell provides simple, powerful React hooks for handling notification permissions, push tokens, badge counts, and notification responses with zero configuration. Managing Expo notifications can be complex and error-prone. Bell handles token refresh, permissions, and badge management for you - with type safety!
+
+[![npm version](https://badge.fury.io/js/expo-bell.svg)](https://www.npmjs.com/package/expo-bell)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 ## 📦 Installation
 
 ```bash
-npm install expo-bell expo-notifications expo-device expo-constants
+npm install expo-bell
 ```
+
+**Peer Dependencies** (install these if not already in your project):
+```bash
+expo install expo-notifications expo-device expo-constants
+```
+
+
+
+## ⚙️ Setup
+
+Before using Bell, ensure your Expo app is configured for push notifications:
+
+### Configure app.json/app.config.js
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff",
+          "sounds": ["./assets/notification-sound.wav"]
+        }
+      ]
+    ]
+  }
+}
+```
+
+
 
 ## 🚀 Quick Start
 
-### 1. Wrap your app with NotificationProvider
 
+### 1. Request and Check Permissions
 ```tsx
-import { NotificationProvider } from 'expo-bell';
+import { useNotificationPermissions } from 'expo-bell';
 
-export default function App() {
-  return (
-    <NotificationProvider>
-      <YourApp />
-    </NotificationProvider>
-  );
-}
-```
+function PermissionsExample() {
+    const { permission, loading, requestPermissions, checkPermissions } = useNotificationPermissions();
 
-### 2. Use notifications in any component
-
-```tsx
-import { useNotification } from 'expo-bell';
-
-function MyComponent() {
-  const { permission, registerForNotifications } = useNotification();
-
-  if (!permission?.granted) {
-    return <Button onPress={registerForNotifications} title="Enable Notifications" />;
-  }
-
-  return <Text>Notifications are enabled! 🎉</Text>;
-}
-```
-
-## 🎯 Usage Examples
-
-### Register for push notifications
-
-```tsx
-import { useNotification } from 'expo-bell';
-
-function NotificationSetup() {
-  const { registerForNotifications, loading } = useNotification();
-
-  const handleRegister = async () => {
-    const token = await registerForNotifications();
-    if (token) {
-      console.log('Push token:', token);
-      // Send token to your backend
-    }
-  };
-
-  return (
-    <Button 
-      onPress={handleRegister} 
-      title={loading ? "Registering..." : "Enable Notifications"} 
-      disabled={loading}
-    />
-  );
-}
-```
-
-### Manage badge counts
-
-```tsx
-import { useNotification } from 'expo-bell';
-
-function BadgeManager() {
-  const { setBadgeCount, incrementBadgeCount, clearBadgeCount } = useNotification();
-
-  return (
-    <View>
-      <Button onPress={() => setBadgeCount(5)} title="Set Badge to 5" />
-      <Button onPress={incrementBadgeCount} title="Add Badge" />
-      <Button onPress={clearBadgeCount} title="Clear Badge" />
-    </View>
-  );
-}
-```
-
-### Custom configuration with handlers
-
-```tsx
-import { NotificationProvider } from 'expo-bell';
-
-function App() {
-  return (
-    <NotificationProvider
-      config={{
-        tokenRefreshInterval: 24 * 60 * 60 * 1000, // 24 hours
-        handleNotification: async (response) => {
-          console.log('Notification received:', response);
-          // Handle notification tap
-        },
-        handleNewToken: async (token) => {
-          console.log('New token:', token);
-          // Send to your backend
+    const handleRequestPermissions = async () => {
+        try {
+            const result = await requestPermissions();
+            if (!result.granted) {
+                Alert.alert('Permission Denied', 'Notifications are required for the best experience.');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to request notification permissions');
         }
-      }}
-    >
-      <YourApp />
-    </NotificationProvider>
-  );
+    };
+
+    return (
+        <View>
+            <Button
+                onPress={handleRequestPermissions}
+                title={loading ? "Requesting..." : "Request Notifications"}
+                disabled={loading}
+            />
+            <Button
+                onPress={checkPermissions}
+                title="Check Permissions"
+            />
+            {!permission?.granted ?
+                <Text>Notifications are not enabled.</Text>
+            :
+                <Text>Notifications are enabled! 🎉</Text>
+            }
+        </View>
+    );
 }
 ```
 
-## 🛠 API Reference
 
-### NotificationProvider Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `config.tokenRefreshInterval` | `number` | `604800000` | Token refresh interval in ms (7 days) |
-| `config.handleNotification` | `function` | `undefined` | Custom notification response handler |
-| `config.handleNewToken` | `function` | `undefined` | Custom new token handler |
-
-### useNotification Hook
-
+### 2. Getting Expo Push Token
 ```tsx
-const {
-  permission,              // PermissionResponse object
-  loading,                 // Registration loading state
-  updateConfig,            // Function to update config
-  registerForNotifications,// Function to register for notifications
-  setBadgeCount,          // Function to set badge count
-  incrementBadgeCount,    // Function to increment badge
-  decrementBadgeCount,    // Function to decrement badge
-  clearBadgeCount,        // Function to clear badge
-} = useNotification();
-```
+import { useExpoPushToken } from 'expo-bell';
 
-### Badge Management Functions
+function PushTokenExample() {
+    const { token, loading, registerForPushTokens } = useExpoPushToken();
 
-```tsx
-// Set specific badge count
-await setBadgeCount(10);
+    const handleRegister = async () => {
+        try {
+            const pushToken = await registerForPushTokens();
+            if (pushToken) {
+                // Send token to your backend server.
+                console.log('Expo Push Token:', pushToken);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to register for push notifications');
+        }
+    };
 
-// Increment current badge count
-await incrementBadgeCount();
-
-// Decrement current badge count (won't go below 0)
-await decrementBadgeCount();
-
-// Clear all badges
-await clearBadgeCount();
-```
-
-## 🔧 Configuration Options
-
-```tsx
-interface NotificationConfig {
-  tokenRefreshInterval: number;                    // Token refresh interval in ms
-  handleNotification?: (response: NotificationResponse) => void | Promise<void>;
-  handleNewToken?: (token: string) => void | Promise<void>;
+    return (
+        <View>
+            <Button
+                onPress={handleRegister}
+                title="Register for notifications and get token"
+                disabled={loading}
+            />
+            {token && <Text>Expo Push Token: {token}</Text> }
+        </View>
+    );
 }
 ```
+
+
+### 3. Receive Push Notifications
+```tsx
+import { NotificationResponse, NotificationContent } from 'expo-notifications'
+import { useNotificationResponse } from 'expo-bell';
+
+function NotificationHandlerExample() {
+    const [lastNotification, setLastNotification] = useState<NotificationContent | null>(null);
+
+    const handleNotification = useCallback((response: NotificationResponse) => {
+        const { notification } = response;
+        setLastNotification(notification.request.content);
+
+        // Handle notification tap.
+        console.log('Notification tapped:', notification.request.content);
+    }, []);
+    
+    useNotificationResponse(handleNotification);
+
+    return (
+        <View>
+            {lastNotification ? (
+                <View>
+                    <Text>📧 Last Notification:</Text>
+                    <Text>Title: {lastNotification.title}</Text>
+                    <Text>Body: {lastNotification.body}</Text>
+                    {lastNotification.data && (
+                        <Text>Data: {JSON.stringify(lastNotification.data)}</Text>
+                    )}
+                </View>
+            ) : (
+                <Text>No notification has come yet.</Text>
+            )}
+        </View>
+    );
+}
+```
+
+
+### 4. Change Badge Count
+> **Note:** `useNotificationBadge` automatically fetches the current badge count when the component mounts.
+```tsx
+import { useNotificationBadge } from 'expo-bell';
+
+function BadgeExample() {
+    const { badgeCount,
+        loading,
+        incrementBadgeCount,
+        decrementBadgeCount,
+        setBadgeCount,
+        clearBadgeCount
+    } = useNotificationBadge();
+
+    return (
+        <View>
+            <Text>Current Badge Count: {badgeCount}</Text>
+            <Button 
+                onPress={incrementBadgeCount} 
+                title="Increment Badge" 
+                disabled={loading}
+            />
+            <Button 
+                onPress={decrementBadgeCount} 
+                title="Decrement Badge" 
+                disabled={loading}
+            />
+            <Button 
+                onPress={() => setBadgeCount(10)} 
+                title="Set Badge to 10" 
+                disabled={loading}
+            />
+            <Button 
+                onPress={clearBadgeCount} 
+                title="Clear Badge" 
+                disabled={loading}
+            />
+        </View>
+    );
+}
+```
+
+
 
 ## 🎯 Features
 
-- ✅ **Zero Configuration** - Works out of the box with sensible defaults
-- ✅ **Automatic Token Refresh** - Handles token expiration and refresh
-- ✅ **Badge Management** - Simple badge count utilities
-- ✅ **Permission Handling** - Streamlined permission flow
+- ✅ **Minimal Configuration** - Works with standard Expo setup
+- ✅ **Badge Management** - Simple badge count utilities with automatic refresh
+- ✅ **Permission Handling** - Streamlined permission flow with error handling
 - ✅ **Type Safety** - Full TypeScript support
-- ✅ **Custom Handlers** - Hook into notification events
+- ✅ **Custom Handlers** - Hook into notification events and responses
 - ✅ **Device Detection** - Automatically handles emulator vs device
+- ✅ **Loading States** - Built-in loading indicators for all async operations
+- ✅ **Error Handling** - Comprehensive error handling with detailed logging
+
+
+## 📚 API Reference
+
+### `useNotificationPermissions()`
+Manages notification permission state and requests.
+
+**Returns:**
+- `permission: PermissionResponse | null` - Current permission status
+- `loading: boolean` - Loading state during permission operations
+- `requestPermissions: () => Promise<PermissionResponse>` - Request notification permissions
+- `checkPermissions: () => Promise<PermissionResponse>` - Check current permissions
+
+### `useExpoPushToken()`
+Handles Expo push token registration and management.
+
+**Returns:**
+- `token: string | null` - The Expo push token
+- `loading: boolean` - Loading state during token operations
+- `registerForPushTokens: () => Promise<string | null>` - Register and get push token
+
+### `useNotificationBadge()`
+Manages app badge count with automatic state synchronization.
+
+**Returns:**
+- `badgeCount: number` - Current badge count
+- `loading: boolean` - Loading state during badge operations
+- `setBadgeCount: (count: number) => Promise<void>` - Set badge to specific number
+- `incrementBadgeCount: () => Promise<void>` - Increment badge by 1
+- `decrementBadgeCount: () => Promise<void>` - Decrement badge by 1 (minimum 0)
+- `clearBadgeCount: () => Promise<void>` - Set badge to 0
+- `refreshBadgeCount: () => Promise<void>` - Refresh badge count from system
+
+### `useNotificationResponse(handler)`
+Listens for notification responses (when user taps notifications).
+
+**Parameters:**
+- `handler: (response: NotificationResponse) => void | Promise<void>` - Callback function
 
 ## 📝 License
 
